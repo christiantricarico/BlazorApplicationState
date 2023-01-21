@@ -1,0 +1,48 @@
+﻿@page "/"
+
+@inject AppState AppState
+@implements IDisposable
+
+<button class="btn btn-primary" @onclick="ToggleEnabledButtonClicked">Toggle Enabled</button>
+<button class="btn btn-primary" @onclick="UpdateMessageButtonClicked">Update Message</button>
+
+<br />
+<br />
+
+<h3>@AppState.Message</h3>
+
+<br />
+<br />
+<ChildComponent />
+
+@code
+{
+    void ToggleEnabledButtonClicked()
+    {
+        AppState.UpdateEnabled(this, !AppState.Enabled);
+    }
+
+    void UpdateMessageButtonClicked()
+    {
+        string msg = $"Message updated at {DateTime.Now.ToLongTimeString()}";
+        AppState.UpdateMessage(this, msg);
+    }
+
+    void AppState_StateChanged(ComponentBase source, string property)
+    {
+        if (source != this)
+            InvokeAsync(StateHasChanged);
+    }
+
+    protected override void OnInitialized()
+    {
+        AppState.StateChanged += AppState_StateChanged;
+    }
+
+    public void Dispose()
+    {
+        AppState.StateChanged -= AppState_StateChanged;
+    }
+
+    
+}
